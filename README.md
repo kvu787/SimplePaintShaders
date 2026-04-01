@@ -1,6 +1,5 @@
-This repo contains my graphics shader projects.
-
-Currently, it's focused on a shader I call the "Simple Paint Shader".
+This repo contains my graphics shader projects.  
+Currently, it's focused on a shader I call the "Simple Paint Shader".  
 
 Here are examples of this shader applied to different models:
 
