@@ -34,6 +34,18 @@ uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
 uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
+/*
+	This is a rearranged form of Christophe Schlick's bias function.
+	It produces an infinitely differentiable curve that intersects (0.5, b).
+
+	NOTE:
+	Schlick uses "a" because it's the first letter in the alphabet.
+	However, I use "b" because the curve intersects with (0.5, b) and "b" makes more sense as a y-coordinate.
+
+	References:
+	1. Graphics Gems IV, 1994, pages 401 to 403, by Christophe Schlick
+	2. A Convenient Generalization of Schlick's Bias and Gain Function, 2020, by Jonathan T. Barron
+*/
 float SchlickA(float a, float t) {
 	a = clamp(a, 0.0001, 0.9999);
 	t = clamp(t, 0.0, 1.0);
@@ -41,6 +53,9 @@ float SchlickA(float a, float t) {
 	return ((1.0 - a) * t) / mix(a, 1.0 - a, t);
 }
 
+/*
+	This is an augmented form of Schlick's bias that intersects point (a, b) and is "squished" into the [c, d] range.
+*/
 float SchlickABCD(float a, float b, float c, float d, float t) {
 	a = clamp(a, 0.0001, 0.9999);
 	b = clamp(b, 0.0001, 0.9999);
