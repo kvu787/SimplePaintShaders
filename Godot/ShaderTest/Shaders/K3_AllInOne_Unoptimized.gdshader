@@ -61,11 +61,38 @@ uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
 /*
-	This is a modified form of Christophe Schlick's bias function.
+	This is Christophe Schlick's bias function.
+	It produces an infinitely differentiable curve that intersects (0.5, b).
+
+	NOTE:
+	Schlick uses "a" because it's the first letter in the alphabet.
+	However, I use "b" because the curve intersects with (0.5, b) and "b" makes more sense as a y-coordinate.
 
 	References:
-	1. Graphics Gems IV, 1994, Christophe Schlick
-	2. A Convenient Generalization of Schlick's Bias and Gain Function, 2020, Jonathan T. Barron
+	1. Graphics Gems IV, 1994, pages 401 to 403, by Christophe Schlick
+	2. A Convenient Generalization of Schlick's Bias and Gain Function, 2020, by Jonathan T. Barron
+*/
+float Schlick_Original(float t, float b) {
+	return t / ((1.0 / b - 2.0) * (1.0 - t) + 1.0);
+}
+
+/*
+	This is like Schlick's bias but the curve intersects (a, 0.5) instead of (0.5, b).
+*/
+float SchlickA_Raw(float t, float a) {
+	return (t * (1.0 - a)) / mix(a, 1.0 - a, t);
+}
+
+/*
+	This is identical to Schlick's bias but rearranged to use mix.
+*/
+float SchlickB_Raw(float t, float b) {
+	return (t * b) / mix(1.0 - b, b, t);
+}
+
+/*
+	This is a modified form of Christophe Schlick's bias function.
+	It produces an infinitely differentiable curve that intersects (a, b).
 */
 float SchlickAB_Raw(float t, float a, float b) {
 	float k1 = b * (1.0 - a);
