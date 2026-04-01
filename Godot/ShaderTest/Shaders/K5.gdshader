@@ -12,8 +12,6 @@ render_mode unshaded;
 
 #define Blue vec4(0.039215688, 0.24705882, 0.78431374, 1)
 
-const float ZEpsilon = 0.0001;
-
 uniform vec4 BaseColor : source_color = Blue;
 
 /*
@@ -36,161 +34,29 @@ uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
 uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
-/*
-	This is Christophe Schlick's bias function.
-	It produces an infinitely differentiable curve that intersects (0.5, b).
-
-	NOTE:
-	Schlick uses "a" because it's the first letter in the alphabet.
-	However, I use "b" because the curve intersects with (0.5, b) and "b" makes more sense as a y-coordinate.
-
-	References:
-	1. Graphics Gems IV, 1994, pages 401 to 403, by Christophe Schlick
-	2. A Convenient Generalization of Schlick's Bias and Gain Function, 2020, by Jonathan T. Barron
-*/
-float Schlick_Original(float t, float b) {
-	return t / ((1.0 / b - 2.0) * (1.0 - t) + 1.0);
-}
-
-/*
-	This is like Schlick's bias but the curve intersects (a, 0.5) instead of (0.5, b).
-*/
-float SchlickA_Raw(float t, float a) {
-	return (t * (1.0 - a)) / mix(a, 1.0 - a, t);
-}
-
-float SchlickA(float t, float a) {
-	if (isnan(t)) { return t; }
-	if (isnan(a)) { return a; }
-
-	if (a == 0.0) {
-		return 1.0;
-	} else if (a == 1.0) {
-		return 0.0;
-	}
-
-	return SchlickA_Raw(t, a);
-}
-
-/*
-	This is identical to Schlick's bias but rearranged to use mix.
-*/
-float SchlickB_Raw(float t, float b) {
-	return (t * b) / mix(1.0 - b, b, t);
-}
-
-float SchlickB(float t, float b) {
-	if (isnan(t)) { return t; }
-	if (isnan(b)) { return b; }
-
-	if (b == 0.0) {
-		return 0.0;
-	} else if (b == 1.0) {
-		return 1.0;
-	}
-
-	return SchlickB_Raw(t, b);
-}
-
-/*
-	This is a modified form of Christophe Schlick's bias function.
-	It produces an infinitely differentiable curve that intersects (a, b).
-*/
-float SchlickAB_Raw(float t, float a, float b) {
-	float k1 = b * (1.0 - a);
-	float k2 = b - a;
-	float k3 = a * (1.0 - b);
-	return (k1 * t) / (k2 * t + k3);
-}
-
-float SchlickAB(float t, float a, float b) {
-	if (isnan(t)) { return t; }
-	if (isnan(a)) { return a; }
-	if (isnan(b)) { return b; }
-
+float SchlickA(float a, float t) {
+	a = clamp(a, 0.0001, 0.9999);
 	t = clamp(t, 0.0, 1.0);
-	a = clamp(a, 0.0, 1.0);
-	b = clamp(b, 0.0, 1.0);
 
-	if ((a == 0.0) && (b == 0.0)) {
-		return t;
-	} else if ((a == 0.0) && (0.0 < b && b < 1.0)) {
-		return 1.0;
-	} else if ((a == 0.0) && (b == 1.0)) {
-		return 1.0;
-	} else if ((0.0 < a && a < 1.0) && (b == 0.0)) {
-		return 0.0;
-	} else if ((0.0 < a && a < 1.0) && (0.0 < b && b < 1.0)) {
-		return SchlickAB_Raw(t, a, b);
-	} else if ((0.0 < a && a < 1.0) && (b == 1.0)) {
-		return 1.0;
-	} else if ((a == 1.0) && (b == 0.0)) {
-		return 0.0;
-	} else if ((a == 1.0) && (0.0 < b && b < 1.0)) {
-		return 0.0;
-	} else if ((a == 1.0) && (b == 1.0)) {
-		return t;
-	}
-
-	// This doesn't handle a defined case.
-	return 0.0;
+	return ((1.0 - a) * t) / mix(a, 1.0 - a, t);
 }
 
-/*
-	This modifies SchlickAB_Raw to be able to "squish" the output into the [c, d] range.
-	Even though the output is bounded in [c, d] the curve still intersects point (a, b).
-*/
-float SchlickABCD_Raw(float t, float a, float b, float c, float d) {
+float SchlickABCD(float a, float b, float c, float d, float t) {
+	a = clamp(a, 0.0001, 0.9999);
+	b = clamp(b, 0.0001, 0.9999);
+	c = clamp(c, 0.0001, 0.9999);
+	d = clamp(d, 0.0001, 0.9999);
+	t = clamp(t, 0.0, 1.0);
+
 	float k1 = d * (b - c) - a * b * (d - c);
 	float k2 = a * c * (d - b);
 	float k3 = (b - c) - a * (d - c);
 	float k4 = a * (d - b);
+
 	return (k1 * t + k2) / (k3 * t + k4);
 }
 
-float SchlickABCD(float t, float a, float b, float c, float d) {
-	if (isnan(t)) { return t; }
-	if (isnan(a)) { return a; }
-	if (isnan(b)) { return b; }
-	if (isnan(c)) { return c; }
-	if (isnan(d)) { return d; }
-
-	t = clamp(t, 0.0, 1.0);
-	a = clamp(a, 0.0, 1.0);
-
-	c = clamp(c, 0.0, 1.0);
-	d = clamp(d, 0.0, 1.0);
-	if (c > d) {
-		return 0.0;
-	}
-
-	b = clamp(b, c, d);
-
-	if ((a == 0.0) && (b == c)) {
-		return (d - c) * t + c;
-	} else if ((a == 0.0) && (c < b && b < d)) {
-		return d;
-	} else if ((a == 0.0) && (b == d)) {
-		return d;
-	} else if ((0.0 < a && a < 1.0) && (b == c)) {
-		return c;
-	} else if ((0.0 < a && a < 1.0) && (c < b && b < d)) {
-		return SchlickABCD_Raw(t, a, b, c, d);
-	} else if ((0.0 < a && a < 1.0) && (b == d)) {
-		return d;
-	} else if ((a == 1.0) && (b == c)) {
-		return c;
-	} else if ((a == 1.0) && (c < b && b < d)) {
-		return c;
-	} else if ((a == 1.0) && (b == d)) {
-		return (d - c) * t + c;
-	}
-
-	// This doesn't handle a defined case.
-	return 0.0;
-}
-
-float MapRange(float t, float aStart, float aEnd, float bStart, float bEnd) {
+float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
 	return ((bEnd - bStart) / (aEnd - aStart)) * (t - aStart) + bStart;
 }
 
@@ -216,21 +82,19 @@ float XComponent(float y, float z) {
 	Typically, the FacingRatio is simply the z component of the surface normal.
 	This forms a hemisphere surface with respect to x and y.
 
-	RemapFacingRatio remaps the facing ratio such that "peak" is shifted by xShift along the positive x-axis.
+	RemapFacingRatio remaps the facing ratio such that the "peak" is shifted along the positive x-axis.
 	The output of RemapFacingRatio forms a surface that is smooth (infinitely differentiable) with respect to x and y.
 	The remapped surface resembles a warped hemisphere.
 */
-float RemapFacingRatio(float x, float y, float z, float xShift) {
-	if (abs(z) < ZEpsilon) {
-		return 0.0;
-	}
+float RemapFacingRatio(float shift, float x, float y) {
+	shift = clamp(shift, 0.0, 1.0);
 
 	float xStart = -XComponent(y, 0.0);
 	float xEnd = XComponent(y, 0.0);
-	float schlickT = MapRange(x, xStart, xEnd, 0.0, 1.0);
-	float schlickA = MapRange(xShift, 0.0, 1.0, 0.5, 1.0);
-	float schlickOut = SchlickA(schlickT, schlickA);
-	float remappedX = MapRange(schlickOut, 0.0, 1.0, xStart, xEnd);
+	float schlickT = MapRange(xStart, xEnd, 0.0, 1.0, x);
+	float schlickA = MapRange(0.0, 1.0, 0.5, 1.0, shift);
+	float schlickOut = SchlickA(schlickA, schlickT);
+	float remappedX = MapRange(0.0, 1.0, xStart, xEnd, schlickOut);
 	float remappedFacingRatio = ZComponent(remappedX, y);
 
 	return remappedFacingRatio;
@@ -239,13 +103,13 @@ float RemapFacingRatio(float x, float y, float z, float xShift) {
 void fragment() {
 	vec3 normal = normalize(NORMAL);
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(Rotation));
-	float remappedFacingRatio = RemapFacingRatio(rotatedNormalXY.x, rotatedNormalXY.y, normal.z, Shift);
+	float remappedFacingRatio = RemapFacingRatio(Shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - Brightness;
 	vec3 darkPoint = mix(BaseColor.rgb, vec3(0.0, 0.0, 0.0), ShadowIntensity);
 	vec3 lightPoint = mix(BaseColor.rgb, vec3(1.0, 1.0, 1.0), HighlightIntensity);
 
 	ALBEDO = vec3(
-		SchlickABCD(remappedFacingRatio, facingRatioPositionOfBaseColor, BaseColor.r, darkPoint.r, lightPoint.r),
-		SchlickABCD(remappedFacingRatio, facingRatioPositionOfBaseColor, BaseColor.g, darkPoint.g, lightPoint.g),
-		SchlickABCD(remappedFacingRatio, facingRatioPositionOfBaseColor, BaseColor.b, darkPoint.b, lightPoint.b));
+		SchlickABCD(facingRatioPositionOfBaseColor, BaseColor.r, darkPoint.r, lightPoint.r, remappedFacingRatio),
+		SchlickABCD(facingRatioPositionOfBaseColor, BaseColor.g, darkPoint.g, lightPoint.g, remappedFacingRatio),
+		SchlickABCD(facingRatioPositionOfBaseColor, BaseColor.b, darkPoint.b, lightPoint.b, remappedFacingRatio));
 }
