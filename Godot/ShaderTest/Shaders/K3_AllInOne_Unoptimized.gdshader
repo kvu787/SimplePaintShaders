@@ -230,7 +230,7 @@ float RemapFacingRatio(float x, float y, float z, float xShift) {
 	float xStart = -XComponent(y, 0.0);
 	float xEnd = XComponent(y, 0.0);
 	float schlickT = MapRange(x, xStart, xEnd, 0.0, 1.0);
-	float schlickA = MapRange(xShift, -1.0, 1.0, 0.0, 1.0);
+	float schlickA = MapRange(xShift, 0.0, 1.0, 0.5, 1.0);
 	float schlickOut = SchlickA(schlickT, schlickA);
 	float remappedX = MapRange(schlickOut, 0.0, 1.0, xStart, xEnd);
 	float remappedFacingRatio = ZComponent(remappedX, y);
