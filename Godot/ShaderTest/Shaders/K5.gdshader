@@ -76,13 +76,13 @@ float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
 }
 
 vec2 RotateXY(vec2 xy, float angle) {
-    float s = sin(angle);
-    float c = cos(angle);
-    // Standard CCW Matrix: [ c  -s ]
-    //                      [ s   c ]
-    // GLSL Column-Major: vec2(c, s), vec2(-s, c)
-    mat2 rotation_matrix = mat2(vec2(c, s), vec2(-s, c));
-    return rotation_matrix * xy;
+	float s = sin(angle);
+	float c = cos(angle);
+	// Standard CCW Matrix: [ c  -s ]
+	//                      [ s   c ]
+	// GLSL Column-Major: vec2(c, s), vec2(-s, c)
+	mat2 rotation_matrix = mat2(vec2(c, s), vec2(-s, c));
+	return rotation_matrix * xy;
 }
 
 float ZComponent(float x, float y) {
