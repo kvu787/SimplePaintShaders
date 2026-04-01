@@ -83,11 +83,37 @@ float SchlickA_Raw(float t, float a) {
 	return (t * (1.0 - a)) / mix(a, 1.0 - a, t);
 }
 
+float SchlickA(float t, float a) {
+	if (isnan(t)) { return t; }
+	if (isnan(a)) { return a; }
+
+	if (a == 0.0) {
+		return 1.0;
+	} else if (a == 1.0) {
+		return 0.0;
+	}
+
+	return SchlickA_Raw(t, a);
+}
+
 /*
 	This is identical to Schlick's bias but rearranged to use mix.
 */
 float SchlickB_Raw(float t, float b) {
 	return (t * b) / mix(1.0 - b, b, t);
+}
+
+float SchlickB(float t, float b) {
+	if (isnan(t)) { return t; }
+	if (isnan(b)) { return b; }
+
+	if (b == 0.0) {
+		return 0.0;
+	} else if (b == 1.0) {
+		return 1.0;
+	}
+
+	return SchlickB_Raw(t, b);
 }
 
 /*
@@ -132,10 +158,6 @@ float SchlickAB(float t, float a, float b) {
 
 	// This doesn't handle a defined case.
 	return 0.0;
-}
-
-float SchlickA(float t, float a) {
-	return SchlickAB(t, a, 0.5);
 }
 
 /*
