@@ -124,7 +124,6 @@ void fragment() {
 	vec3 darkPoint = mix(BaseColor.rgb, vec3(0.0, 0.0, 0.0), ShadowIntensity);
 	vec3 lightPoint = mix(BaseColor.rgb, vec3(1.0, 1.0, 1.0), HighlightIntensity);
 
-	// Instead of calling it three times, do it once:
 	ALBEDO = SchlickABCD_Vec3(
 		vec3(facingRatioPositionOfBaseColor),
 		BaseColor.rgb,
