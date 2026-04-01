@@ -54,19 +54,19 @@ float SchlickA(float a, float t) {
 }
 
 /*
-	This is an augmented form of Schlick's bias that intersects point (a, b) and is "squished" into the [c, d] range.
+	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b) and is "squished" into the [c, d] range.
 */
-float SchlickABCD(float a, float b, float c, float d, float t) {
-	a = clamp(a, 0.0001, 0.9999);
-	b = clamp(b, 0.0001, 0.9999);
-	c = clamp(c, 0.0001, 0.9999);
-	d = clamp(d, 0.0001, 0.9999);
-	t = clamp(t, 0.0, 1.0);
+vec3 SchlickABCD_Vec3(vec3 a, vec3 b, vec3 c, vec3 d, vec3 t) {
+	a = clamp(a, vec3(0.0001), vec3(0.9999));
+	b = clamp(b, vec3(0.0001), vec3(0.9999));
+	c = clamp(c, vec3(0.0001), vec3(0.9999));
+	d = clamp(d, vec3(0.0001), vec3(0.9999));
+	t = clamp(t, vec3(0.0), vec3(1.0));
 
-	float k1 = d * (b - c) - a * b * (d - c);
-	float k2 = a * c * (d - b);
-	float k3 = (b - c) - a * (d - c);
-	float k4 = a * (d - b);
+	vec3 k1 = d * (b - c) - a * b * (d - c);
+	vec3 k2 = a * c * (d - b);
+	vec3 k3 = (b - c) - a * (d - c);
+	vec3 k4 = a * (d - b);
 
 	return (k1 * t + k2) / (k3 * t + k4);
 }
@@ -116,6 +116,7 @@ float RemapFacingRatio(float shift, float x, float y) {
 }
 
 void fragment() {
+	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
 	vec3 normal = normalize(NORMAL);
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(Rotation));
 	float remappedFacingRatio = RemapFacingRatio(Shift, rotatedNormalXY.x, rotatedNormalXY.y);
@@ -123,8 +124,11 @@ void fragment() {
 	vec3 darkPoint = mix(BaseColor.rgb, vec3(0.0, 0.0, 0.0), ShadowIntensity);
 	vec3 lightPoint = mix(BaseColor.rgb, vec3(1.0, 1.0, 1.0), HighlightIntensity);
 
-	ALBEDO = vec3(
-		SchlickABCD(facingRatioPositionOfBaseColor, BaseColor.r, darkPoint.r, lightPoint.r, remappedFacingRatio),
-		SchlickABCD(facingRatioPositionOfBaseColor, BaseColor.g, darkPoint.g, lightPoint.g, remappedFacingRatio),
-		SchlickABCD(facingRatioPositionOfBaseColor, BaseColor.b, darkPoint.b, lightPoint.b, remappedFacingRatio));
+	// Instead of calling it three times, do it once:
+	ALBEDO = SchlickABCD_Vec3(
+		vec3(facingRatioPositionOfBaseColor),
+		BaseColor.rgb,
+		darkPoint,
+		lightPoint,
+		vec3(remappedFacingRatio));
 }
