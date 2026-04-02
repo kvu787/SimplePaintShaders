@@ -94,9 +94,9 @@ vec2 RotateXY(vec2 xy, float angle) {
 	to avoid square rooting a very small negative number caused by float imprecision.
 
 	For example, if x=(2^0.5)/2 and y=(2^0.5)/2, then `1.0 - x*x - y*y` could equal something
-	like -0.000000001 due to float imprecision. Then, you would get sqrt(-0.000000001) = NaN.
-	Because we know that `1.0 - x*x - y*y` is bounded in [0.0, 1.0], we can use `max` to
-	prevent tiny negative numbers.
+	like -0.000000001 instead of 0 due to float imprecision. Then, you would get
+	sqrt(-0.000000001) = NaN. Because we know that `1.0 - x*x - y*y` is bounded in [0.0, 1.0], we
+	can use `max` to prevent tiny negative numbers.
 */
 float ZComponent(float x, float y) {
 	return sqrt(max(0.0, 1.0 - x*x - y*y));
