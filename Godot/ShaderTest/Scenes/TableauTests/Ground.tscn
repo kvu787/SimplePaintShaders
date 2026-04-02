@@ -1,0 +1,9 @@
+[gd_scene format=3 uid="uid://gukw6g2fd582"]
+
+[ext_resource type="PackedScene" uid="uid://c82kj1yfa5qa0" path="res://GLB/Ground.glb" id="1_7g7hx"]
+[ext_resource type="Material" uid="uid://cvtpw50rt8k80" path="res://Scenes/TableauTests/Ground.tres" id="2_23fep"]
+
+[node name="Ground" unique_id=1579513882 instance=ExtResource("1_7g7hx")]
+
+[node name="grasslands" parent="." index="0" unique_id=2028836066]
+material_override = ExtResource("2_23fep")
