@@ -115,8 +115,6 @@ float XComponent(float y, float z) {
 	The remapped surface resembles a warped hemisphere.
 */
 float RemapFacingRatio(float shift, float x, float y) {
-	shift = clamp(shift, 0.0, 1.0);
-
 	float xStart = -XComponent(y, 0.0);
 	float xEnd = XComponent(y, 0.0);
 	float schlickT = MapRange(xStart, xEnd, 0.0, 1.0, x);
