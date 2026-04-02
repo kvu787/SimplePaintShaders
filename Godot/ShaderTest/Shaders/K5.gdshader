@@ -85,6 +85,18 @@ vec2 RotateXY(vec2 xy, float angle) {
 	return rotation_matrix * xy;
 }
 
+/*
+	This computes the z component of a 3d vector with length=1.
+	It assumes that x and y are bounded in [0.0, 1.0].
+
+	We use `sqrt(max(0.0, 1.0 - x*x - y*y))` instead of the simpler `sqrt(1.0 - x*x - y*y)`
+	to avoid square rooting a very small negative number caused by float imprecision.
+
+	For example, if x=(2^0.5)/2 and y=(2^0.5)/2, then `1.0 - x*x - y*y` could equal something
+	like -0.000000001 due to float imprecision. Then, you would get sqrt(-0.000000001) = NaN.
+	Because we know that `1.0 - x*x - y*y` is bounded in [0.0, 1.0], we can use `max` to
+	prevent tiny negative numbers.
+*/
 float ZComponent(float x, float y) {
 	return sqrt(max(0.0, 1.0 - x*x - y*y));
 }
