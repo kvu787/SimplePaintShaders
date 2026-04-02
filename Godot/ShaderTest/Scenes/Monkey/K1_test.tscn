@@ -25,7 +25,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
 [node name="Suzanne" parent="Set1" unique_id=2018304720 instance=ExtResource("1_sb437")]
 transform = Transform3D(0.9156626, 0.1315245, 0.3798201, 0, 0.9449489, -0.3272179, -0.40194777, 0.2996212, 0.86525434, -4.5, 0, 0)
 
-[node name="_Suzanne" parent="Set1/Suzanne" index="0" unique_id=1019502969]
+[node name="_Suzanne" parent="Set1/Suzanne" index="0" unique_id=1711010719]
 material_override = ExtResource("2_8a0qt")
 
 [node name="SuzanneSphere" type="MeshInstance3D" parent="Set1" unique_id=204834354]
@@ -52,7 +52,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -1.1, 0)
 [node name="Suzanne" parent="Set2" unique_id=1836349872 instance=ExtResource("1_sb437")]
 transform = Transform3D(0.9156626, 0.1315245, 0.3798201, 0, 0.9449489, -0.3272179, -0.40194777, 0.2996212, 0.86525434, -4.5, 0, 0)
 
-[node name="_Suzanne" parent="Set2/Suzanne" index="0" unique_id=1019502969]
+[node name="_Suzanne" parent="Set2/Suzanne" index="0" unique_id=1711010719]
 material_override = ExtResource("3_3hbsr")
 
 [node name="SuzanneSphere" type="MeshInstance3D" parent="Set2" unique_id=1455936755]

@@ -5,5 +5,5 @@
 
 [node name="Monkey" unique_id=218753179 instance=ExtResource("1_6oini")]
 
-[node name="_Suzanne" parent="." index="0" unique_id=1019502969]
+[node name="_Suzanne" parent="." index="0" unique_id=1711010719]
 material_override = ExtResource("2_ck3ck")

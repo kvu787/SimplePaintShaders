@@ -5,5 +5,5 @@
 
 [node name="SloopSpeeder4" unique_id=1305368058 instance=ExtResource("1_porrx")]
 
-[node name="_SloopSpeeder4" parent="." index="0" unique_id=1821004317]
+[node name="_SloopSpeeder4" parent="." index="0" unique_id=1432360789]
 material_override = ExtResource("2_2bcmd")

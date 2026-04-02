@@ -31,7 +31,7 @@ mesh = SubResource("PlaneMesh_ucvpw")
 [node name="WedgeCar" parent="." unique_id=1469708673 instance=ExtResource("1_l8wa2")]
 transform = Transform3D(0.70710677, 0, 0.70710677, 0, 1, 0, -0.70710677, 0, 0.70710677, 0, 0, 0)
 
-[node name="_WedgeCar" parent="WedgeCar" index="0" unique_id=1046714631]
+[node name="_WedgeCar" parent="WedgeCar" index="0" unique_id=2041264143]
 surface_material_override/0 = ExtResource("2_l8wa2")
 surface_material_override/1 = ExtResource("3_hri02")
 surface_material_override/2 = ExtResource("4_hic5s")

@@ -7,7 +7,7 @@
 
 [node name="WedgeCar" unique_id=1999647565 instance=ExtResource("1_sfun1")]
 
-[node name="_WedgeCar" parent="." index="0" unique_id=1046714631]
+[node name="_WedgeCar" parent="." index="0" unique_id=2041264143]
 surface_material_override/0 = ExtResource("3_o4a0l")
 surface_material_override/1 = ExtResource("4_yfntx")
 surface_material_override/2 = ExtResource("5_fnmk3")

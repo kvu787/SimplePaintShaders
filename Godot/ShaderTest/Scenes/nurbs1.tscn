@@ -5,6 +5,6 @@
 
 [node name="NurbsSolidTest4" unique_id=1587284574 instance=ExtResource("1_cksrj")]
 
-[node name="SurfPatch_001" parent="." index="0" unique_id=801631704]
+[node name="SurfPatch_001" parent="." index="0" unique_id=625960455]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.2045337, 0, -0.5777791)
 material_override = ExtResource("2_sik7t")

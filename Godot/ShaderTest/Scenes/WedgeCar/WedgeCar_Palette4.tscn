@@ -13,7 +13,7 @@ environment = ExtResource("1_aqgyc")
 
 [node name="WedgeCar" parent="." unique_id=427415892 instance=ExtResource("3_8rbqg")]
 
-[node name="_WedgeCar" parent="WedgeCar" index="0" unique_id=1046714631]
+[node name="_WedgeCar" parent="WedgeCar" index="0" unique_id=2041264143]
 transform = Transform3D(0.30541137, 0, 0.4342986, 0, 0.5309344, 0, -0.43429852, 0, 0.30541137, 0, 0, 0)
 surface_material_override/0 = ExtResource("4_aqgyc")
 surface_material_override/1 = ExtResource("4_aqgyc")

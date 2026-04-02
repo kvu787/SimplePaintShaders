@@ -24,7 +24,7 @@ mesh = SubResource("QuadMesh_wdqrb")
 [node name="Suzanne" parent="." unique_id=1108347920 instance=ExtResource("2_fxpqg")]
 transform = Transform3D(0.8701593, 0.13199432, 0.4747634, 0.008519042, 0.95928395, -0.28231534, -0.49269688, 0.24970387, 0.8336053, -1.605, 0, 0)
 
-[node name="_Suzanne" parent="Suzanne" index="0" unique_id=1019502969]
+[node name="_Suzanne" parent="Suzanne" index="0" unique_id=1711010719]
 material_override = ExtResource("4_fxpqg")
 
 [node name="Sphere" type="MeshInstance3D" parent="." unique_id=101966410]

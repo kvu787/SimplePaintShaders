@@ -5,7 +5,7 @@
 
 [node name="SlopeCar" unique_id=1973928207 instance=ExtResource("1_7k1ho")]
 
-[node name="_SlopeCar" parent="." index="0" unique_id=1248069715]
+[node name="_SlopeCar" parent="." index="0" unique_id=457087718]
 surface_material_override/0 = ExtResource("2_fqxtn")
 surface_material_override/1 = ExtResource("2_fqxtn")
 surface_material_override/2 = ExtResource("2_fqxtn")

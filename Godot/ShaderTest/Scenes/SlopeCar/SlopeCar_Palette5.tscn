@@ -31,7 +31,7 @@ mesh = SubResource("PlaneMesh_ucvpw")
 
 [node name="SlopeCar" parent="." unique_id=390658820 instance=ExtResource("3_2doow")]
 
-[node name="_SlopeCar" parent="SlopeCar" index="0" unique_id=1248069715]
+[node name="_SlopeCar" parent="SlopeCar" index="0" unique_id=457087718]
 transform = Transform3D(0.7071067, 0, 0.7071067, 0, 1, 0, -0.7071067, 0, 0.7071067, 0, 0, 0)
 surface_material_override/0 = ExtResource("4_dwst5")
 surface_material_override/1 = ExtResource("5_x236w")

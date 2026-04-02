@@ -6,6 +6,6 @@
 
 [node name="SpuusCraft1" unique_id=33894129 instance=ExtResource("1_5khce")]
 
-[node name="_SpuusCraft" parent="." index="0" unique_id=1529096531]
+[node name="_SpuusCraft" parent="." index="0" unique_id=1841803153]
 surface_material_override/0 = ExtResource("2_kwc2e")
 surface_material_override/1 = ExtResource("3_syojm")
