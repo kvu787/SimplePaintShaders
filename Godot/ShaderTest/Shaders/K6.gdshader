@@ -115,8 +115,6 @@ float XComponent(float y, float z) {
 	The remapped surface resembles a warped hemisphere.
 */
 float RemapFacingRatio(float shift, float x, float y) {
-	shift = clamp(shift, 0.0, 1.0);
-
 	float xStart = -XComponent(y, 0.0);
 	float xEnd = XComponent(y, 0.0);
 	float schlickT = MapRange(xStart, xEnd, 0.0, 1.0, x);
@@ -144,3 +142,71 @@ void fragment() {
 		lightPoint,
 		vec3(remappedFacingRatio));
 }
+
+// void ComputeUniforms(float rotation) {
+// 	float s = sin(-1.0 * radians(rotation));
+// 	float c = cos(-1.0 * radians(rotation));
+// 	mat2 rotationMatrix = mat2(vec2(c, s), vec2(-s, c));
+// 	float u0 = rotationMatrix[0][0]
+// 	float u1 = rotationMatrix[0][1]
+// 	float u2 = rotationMatrix[1][0]
+// 	float u3 = rotationMatrix[1][1]
+// 	float u4 = MapRange(0.0, 1.0, 0.5, 1.0, shift);
+// }
+
+// vec3 ComputeAlbedo(float u0, float u1, float u2, float u3, vec3 normal) {
+// 	normal = normalize(NORMAL);
+// 	vec2 rotatedNormalXY = mat2(u0, u1, u2, u3) * normal.xy;
+// 	float x = rotatedNormalXY.x;
+// 	float y = rotatedNormalXY.y;
+// 	float xEnd = sqrt(max(0.0, 1.0 - y*y));
+// 	float xStart = -xEnd;
+// 	float schlickT = MapRange(xStart, xEnd, 0.0, 1.0, x);
+// 	float schlickOut = (u4 * t) / mix(u5, u4, schlickT);
+// 	float remappedX = MapRange(0.0, 1.0, xStart, xEnd, schlickOut);
+// 	float remappedFacingRatio = ZComponent(remappedX, y);
+// }
+
+float ComputeRemappedFacingRatio(float u0, float u1, float u2, float u3, float u4, float u5, vec3 normal) {
+	normal = normalize(normal);
+	//vec2 rotatedNormalXY = mat2(u0, u1, u2, u3) * normal.xy;
+	vec2 rotatedNormalXY = mat2(vec2(u0, u1), vec2(u2, u3)) * normal.xy;
+	float x = rotatedNormalXY.x;
+	float y = rotatedNormalXY.y;
+	float xEnd = sqrt(max(0.0, 1.0 - y*y));
+	float xStart = -xEnd;
+	float t = (x - xStart) / (xEnd - xStart);
+	float schlickOut = (u4 * t) / mix(u5, u4, t);
+	// float remappedX = MapRange(0.0, 1.0, xStart, xEnd, schlickOut);
+	// float remappedX = ((bEnd - bStart) / (aEnd - aStart)) * (t - aStart) + bStart;
+	// float remappedX = ((bEnd - bStart) / (1.0 - 0.0)) * (schlickOut - 0.0) + bStart;
+	// float remappedX = (bEnd - bStart) * schlickOut + bStart;
+	// float remappedX = (xEnd - xStart) * schlickOut + xStart;
+	float remappedX = (xEnd - xStart) * schlickOut + xStart;
+	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - y*y));
+	return remappedFacingRatio;
+}
+
+// float ZComponent(float x, float y) {
+// 	return sqrt(max(0.0, 1.0 - x*x - y*y));
+// }
+
+// float SchlickA(float a, float t) {
+// 	a = clamp(a, 0.0001, 0.9999);
+// 	t = clamp(t, 0.0, 1.0);
+// 	return ((1.0 - a) * t) / mix(a, 1.0 - a, t);
+// }
+
+// float SchlickA(float a, float t) {
+// 	a = clamp(a, 0.0001, 0.9999);
+// 	t = clamp(t, 0.0, 1.0);
+// 	return (u0 * t) / mix(u1, u0, t);
+// }
+
+// float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
+// 	return ((bEnd - bStart) / (aEnd - aStart)) * (t - aStart) + bStart;
+// }
+
+// /*
+// mix = a + (b - a) * t
+// */
