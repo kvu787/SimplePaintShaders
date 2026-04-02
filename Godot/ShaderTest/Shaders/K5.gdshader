@@ -1,5 +1,6 @@
 shader_type spatial;
 render_mode unshaded;
+render_mode cull_disabled;
 
 /*
 	This brightness value means that the base color appears at a facing ratio of cosine(37 degrees),
