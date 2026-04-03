@@ -60,8 +60,8 @@ uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 	It produces an infinitely differentiable curve that intersects (0.5, b).
 
 	NOTE:
-	Schlick uses "a" because it's the first letter in the alphabet.
-	However, I use "b" because the curve intersects with (0.5, b) and "b" makes more sense as a y-coordinate.
+	Schlick uses "a" because it's the first letter in the alphabet. However, I use "b" because the
+	curve intersects with (0.5, b) and "b" makes more sense as a y-coordinate.
 
 	References:
 	1. Graphics Gems IV, 1994, pages 401 to 403, by Christophe Schlick
@@ -72,7 +72,8 @@ float SchlickA(float a, float t) {
 }
 
 /*
-	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b) and is "squished" into the [c, d] range.
+	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b) and is
+	"squished" into the [c, d] range.
 */
 vec3 SchlickABCD_Vec3(vec3 a, vec3 b, vec3 c, vec3 d, vec3 t) {
 	vec3 k1 = d * (b - c) - a * b * (d - c);
@@ -121,9 +122,9 @@ float XComponent(float y, float z) {
 	Typically, the FacingRatio is simply the z component of the surface normal.
 	This forms a hemisphere surface with respect to x and y.
 
-	RemapFacingRatio remaps the facing ratio such that the "peak" is shifted along the positive x-axis.
-	The output of RemapFacingRatio forms a surface that is smooth (infinitely differentiable) with respect to x and y.
-	The remapped surface resembles a warped hemisphere.
+	RemapFacingRatio remaps the facing ratio such that the "peak" is shifted along the positive
+	x-axis. The output of RemapFacingRatio forms a surface that is smooth (infinitely
+	differentiable) with respect to x and y. The remapped surface resembles a warped hemisphere.
 */
 float RemapFacingRatio(float shift, float x, float y) {
 	float xStart = -XComponent(y, 0.0);
