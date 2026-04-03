@@ -138,19 +138,25 @@ float RemapFacingRatio(float shift, float x, float y) {
 	return remappedFacingRatio;
 }
 
-void fragment() {
+vec3 ComputeAlbedo1(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity, vec3 normal) {
 	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
-	vec3 normal = normalize(NORMAL);
+	normal = normalize(normal);
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(Rotation));
 	float remappedFacingRatio = RemapFacingRatio(Shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - Brightness;
-	vec3 darkPoint = mix(BaseColor.rgb, vec3(0.0), ShadowIntensity);
-	vec3 lightPoint = mix(BaseColor.rgb, vec3(1.0), HighlightIntensity);
+	vec3 darkRgb = mix(BaseColor.rgb, vec3(0.0), ShadowIntensity);
+	vec3 lightRgb = mix(BaseColor.rgb, vec3(1.0), HighlightIntensity);
 
-	ALBEDO = SchlickABCD_Vec3(
+	vec3 albedo  = SchlickABCD_Vec3(
 		vec3(facingRatioPositionOfBaseColor),
 		BaseColor.rgb,
-		darkPoint,
-		lightPoint,
+		darkRgb,
+		lightRgb,
 		vec3(remappedFacingRatio));
+
+	return albedo;
+}
+
+void fragment() {
+	ALBEDO = ComputeAlbedo1(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity, NORMAL);
 }
