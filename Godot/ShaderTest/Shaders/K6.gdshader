@@ -37,6 +37,25 @@ uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
 /*
+	NOTE for the below Schlick functions:
+
+	The ABCD parameters for Schlick functions are typically bounded in (0, 1), not [0, 1]. When
+	they are set to 0 or 1, they cause strange behavior. To prevent this, a previous version of
+	this shader clamped them like this: a = clamp(a, 0.0001, 0.9999).
+
+	However, those clamps made it so that you couldn't get a 100% dark/black or 100% bright/white
+	shader sphere, or other similar results. To get those results, you would either have to use a
+	different shader or add branches for those cases to this shader, which isn't ideal.
+
+	As an experiment, I removed all Schlick parameter clamping. The results were good for all
+	the "extreme inputs" (various combinations of max/min inputs) that I tested. This removal of
+	clamping allows for totally black/white shader spheres and other similar "nice-to-have"
+	results. I haven't rigorously proven that this doesn't produce any undesirable results, but
+	my spot testing has convinced me to remove Schlick clamping until I find a concrete example of
+	something undesirable. At some point, I should do a thorough analysis and proof.
+*/
+
+/*
 	This is a rearranged form of Christophe Schlick's bias function.
 	It produces an infinitely differentiable curve that intersects (0.5, b).
 
