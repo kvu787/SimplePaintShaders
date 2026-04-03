@@ -48,6 +48,9 @@ uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 	2. A Convenient Generalization of Schlick's Bias and Gain Function, 2020, by Jonathan T. Barron
 */
 float SchlickA(float a, float t) {
+	a = clamp(a, 0.0001, 0.9999);
+	t = clamp(t, 0.0, 1.0);
+
 	return ((1.0 - a) * t) / mix(a, 1.0 - a, t);
 }
 
@@ -55,6 +58,12 @@ float SchlickA(float a, float t) {
 	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b) and is "squished" into the [c, d] range.
 */
 vec3 SchlickABCD_Vec3(vec3 a, vec3 b, vec3 c, vec3 d, vec3 t) {
+	a = clamp(a, vec3(0.0001), vec3(0.9999));
+	b = clamp(b, vec3(0.0001), vec3(0.9999));
+	c = clamp(c, vec3(0.0001), vec3(0.9999));
+	d = clamp(d, vec3(0.0001), vec3(0.9999));
+	t = clamp(t, vec3(0.0), vec3(1.0));
+
 	vec3 k1 = d * (b - c) - a * b * (d - c);
 	vec3 k2 = a * c * (d - b);
 	vec3 k3 = (b - c) - a * (d - c);
@@ -85,9 +94,9 @@ vec2 RotateXY(vec2 xy, float angle) {
 	to avoid square rooting a very small negative number caused by float imprecision.
 
 	For example, if x=(2^0.5)/2 and y=(2^0.5)/2, then `1.0 - x*x - y*y` could equal something
-	like -0.000000001 instead of 0 due to float imprecision. Then, you would get
-	sqrt(-0.000000001) = NaN. Because we know that `1.0 - x*x - y*y` is bounded in [0.0, 1.0], we
-	can use `max` to prevent tiny negative numbers.
+	like -0.000000001 due to float imprecision. Then, you would get sqrt(-0.000000001) = NaN.
+	Because we know that `1.0 - x*x - y*y` is bounded in [0.0, 1.0], we can use `max` to
+	prevent tiny negative numbers.
 */
 float ZComponent(float x, float y) {
 	return sqrt(max(0.0, 1.0 - x*x - y*y));
@@ -133,3 +142,71 @@ void fragment() {
 		lightPoint,
 		vec3(remappedFacingRatio));
 }
+
+// void ComputeUniforms(float rotation) {
+// 	float s = sin(-1.0 * radians(rotation));
+// 	float c = cos(-1.0 * radians(rotation));
+// 	mat2 rotationMatrix = mat2(vec2(c, s), vec2(-s, c));
+// 	float u0 = rotationMatrix[0][0]
+// 	float u1 = rotationMatrix[0][1]
+// 	float u2 = rotationMatrix[1][0]
+// 	float u3 = rotationMatrix[1][1]
+// 	float u4 = MapRange(0.0, 1.0, 0.5, 1.0, shift);
+// }
+
+// vec3 ComputeAlbedo(float u0, float u1, float u2, float u3, vec3 normal) {
+// 	normal = normalize(NORMAL);
+// 	vec2 rotatedNormalXY = mat2(u0, u1, u2, u3) * normal.xy;
+// 	float x = rotatedNormalXY.x;
+// 	float y = rotatedNormalXY.y;
+// 	float xEnd = sqrt(max(0.0, 1.0 - y*y));
+// 	float xStart = -xEnd;
+// 	float schlickT = MapRange(xStart, xEnd, 0.0, 1.0, x);
+// 	float schlickOut = (u4 * t) / mix(u5, u4, schlickT);
+// 	float remappedX = MapRange(0.0, 1.0, xStart, xEnd, schlickOut);
+// 	float remappedFacingRatio = ZComponent(remappedX, y);
+// }
+
+float ComputeRemappedFacingRatio(float u0, float u1, float u2, float u3, float u4, float u5, vec3 normal) {
+	normal = normalize(normal);
+	//vec2 rotatedNormalXY = mat2(u0, u1, u2, u3) * normal.xy;
+	vec2 rotatedNormalXY = mat2(vec2(u0, u1), vec2(u2, u3)) * normal.xy;
+	float x = rotatedNormalXY.x;
+	float y = rotatedNormalXY.y;
+	float xEnd = sqrt(max(0.0, 1.0 - y*y));
+	float xStart = -xEnd;
+	float t = (x - xStart) / (xEnd - xStart);
+	float schlickOut = (u4 * t) / mix(u5, u4, t);
+	// float remappedX = MapRange(0.0, 1.0, xStart, xEnd, schlickOut);
+	// float remappedX = ((bEnd - bStart) / (aEnd - aStart)) * (t - aStart) + bStart;
+	// float remappedX = ((bEnd - bStart) / (1.0 - 0.0)) * (schlickOut - 0.0) + bStart;
+	// float remappedX = (bEnd - bStart) * schlickOut + bStart;
+	// float remappedX = (xEnd - xStart) * schlickOut + xStart;
+	float remappedX = (xEnd - xStart) * schlickOut + xStart;
+	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - y*y));
+	return remappedFacingRatio;
+}
+
+// float ZComponent(float x, float y) {
+// 	return sqrt(max(0.0, 1.0 - x*x - y*y));
+// }
+
+// float SchlickA(float a, float t) {
+// 	a = clamp(a, 0.0001, 0.9999);
+// 	t = clamp(t, 0.0, 1.0);
+// 	return ((1.0 - a) * t) / mix(a, 1.0 - a, t);
+// }
+
+// float SchlickA(float a, float t) {
+// 	a = clamp(a, 0.0001, 0.9999);
+// 	t = clamp(t, 0.0, 1.0);
+// 	return (u0 * t) / mix(u1, u0, t);
+// }
+
+// float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
+// 	return ((bEnd - bStart) / (aEnd - aStart)) * (t - aStart) + bStart;
+// }
+
+// /*
+// mix = a + (b - a) * t
+// */
