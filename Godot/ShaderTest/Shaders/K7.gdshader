@@ -194,7 +194,7 @@ ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, 
 	si.k2 = a * c * (d - b);
 	si.k3 = (b - c) - a * (d - c);
 	si.k4 = a * (d - b);
-	
+
 	return si;
 }
 
@@ -221,40 +221,3 @@ void fragment() {
 	ShaderInputs shaderInputs = ComputeShaderInputs(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
 	ALBEDO = ComputeAlbedo2(shaderInputs, NORMAL);
 }
-
-/*
-TODO:
-
-The following values are computed once on the cpu and passed to the gpu shader:
-
-float rs = sin(-1.0 * radians(rotation));
-float rc = cos(-1.0 * radians(rotation));
-float u1 = mix(0.5, 1.0, shift);
-float u2 = 1.0 - u1;
-float facingRatioPositionOfBaseColor = 1.0 - brightness;
-vec3 darkRgb = mix(baseColor.rgb, vec3(0.0), shadowIntensity);
-vec3 lightRgb = mix(baseColor.rgb, vec3(1.0), highlightIntensity);
-vec3 a = vec3(facingRatioPositionOfBaseColor);
-vec3 b = baseColor.rgb;
-vec3 c = darkRgb;
-vec3 d = lightRgb;
-vec3 k1 = d * (b - c) - a * b * (d - c);
-vec3 k2 = a * c * (d - b);
-vec3 k3 = (b - c) - a * (d - c);
-vec3 k4 = a * (d - b);
-
-This is the only part that runs on the gpu:
-
-void fragment() {
-	normal = normalize(normal);
-	float x = normal.x * rc - normal.y * rs;
-	float y = normal.x * rs + normal.y * rc;
-	float xStart = -1.0 * sqrt(max(0.0, 1.0 - y*y));
-	float xEnd = -1.0 * xStart;
-	float schlickT = (x - xStart) / (xEnd - xStart);
-	float schlickOut = (u2 * schlickT) / mix(u1, u2, schlickT);
-	float remappedX = (xEnd - xStart) * schlickOut + xStart;
-	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - y*y));
-	ALBEDO = (k1 * vec3(remappedFacingRatio) + k2) / (k3 * vec3(remappedFacingRatio) + k4);
-}
-*/
