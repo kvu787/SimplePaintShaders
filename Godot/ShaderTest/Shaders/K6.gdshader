@@ -64,7 +64,7 @@ vec3 SchlickABCD_Vec3(vec3 a, vec3 b, vec3 c, vec3 d, vec3 t) {
 }
 
 float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
-	return ((bEnd - bStart) / (aEnd - aStart)) * (t - aStart) + bStart;
+	return mix(bStart, bEnd, (t - aStart) / (aEnd - aStart));
 }
 
 vec2 RotateXY(vec2 xy, float angle) {
