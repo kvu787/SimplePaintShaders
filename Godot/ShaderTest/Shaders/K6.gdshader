@@ -2,6 +2,11 @@ shader_type spatial;
 render_mode unshaded;
 render_mode cull_disabled;
 
+// This is used for the default base color.
+#define BLUE vec4(0.039215688, 0.24705882, 0.78431374, 1)
+
+uniform vec4 BaseColor : source_color = BLUE;
+
 /*
 	This brightness value means that the base color appears at a facing ratio of cosine(37 degrees),
 	which means the surface normal forms an angle of 37 degrees with the light direction.
@@ -9,11 +14,7 @@ render_mode cull_disabled;
 	    cosine(37 degrees) = 0.79863551
 	1 - cosine(37 degrees) = 0.20136449
 */
-#define BrightnessCosine37Degrees 0.20136449
-
-#define Blue vec4(0.039215688, 0.24705882, 0.78431374, 1)
-
-uniform vec4 BaseColor : source_color = Blue;
+#define BRIGHTNESS_COSINE_37_DEGREES 0.20136449
 
 /*
 	Brightness is defined as the complement of the facing ratio at which the base color appears.
@@ -28,7 +29,7 @@ uniform vec4 BaseColor : source_color = Blue;
 	lightening to a much larger range from 0.2 to 1.0. The larger the lightening range is, the
 	brighter the object is.
 */
-uniform float Brightness : hint_range(0.0, 1.0) = BrightnessCosine37Degrees;
+uniform float Brightness : hint_range(0.0, 1.0) = BRIGHTNESS_COSINE_37_DEGREES;
 
 uniform float Shift : hint_range(0.0, 1.0) = 0.0;
 uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
@@ -123,8 +124,8 @@ void fragment() {
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(Rotation));
 	float remappedFacingRatio = RemapFacingRatio(Shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - Brightness;
-	vec3 darkPoint = mix(BaseColor.rgb, vec3(0.0, 0.0, 0.0), ShadowIntensity);
-	vec3 lightPoint = mix(BaseColor.rgb, vec3(1.0, 1.0, 1.0), HighlightIntensity);
+	vec3 darkPoint = mix(BaseColor.rgb, vec3(0.0), ShadowIntensity);
+	vec3 lightPoint = mix(BaseColor.rgb, vec3(1.0), HighlightIntensity);
 
 	ALBEDO = SchlickABCD_Vec3(
 		vec3(facingRatioPositionOfBaseColor),
