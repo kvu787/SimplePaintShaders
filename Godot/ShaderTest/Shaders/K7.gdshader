@@ -60,12 +60,13 @@ vec3 ComputeAlbedo2(ShaderInputs si, vec3 normal) {
 
 	float x = normal.x * si.rc - normal.y * si.rs;
 	float y = normal.x * si.rs + normal.y * si.rc;
-	float xStart = -1.0 * sqrt(max(0.0, 1.0 - y*y));
+	float yy = y*y;
+	float xStart = -1.0 * sqrt(max(0.0, 1.0 - yy));
 	float xEnd = -1.0 * xStart;
 	float schlickT = (x - xStart) / (xEnd - xStart);
 	float schlickOut = (si.u2 * schlickT) / mix(si.u1, si.u2, schlickT);
 	float remappedX = mix(xStart, xEnd, schlickOut);
-	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - y*y));
+	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - yy));
 	vec3 albedo = (si.k1 * remappedFacingRatio + si.k2) / (si.k3 * remappedFacingRatio + si.k4);
 
 	return albedo;
