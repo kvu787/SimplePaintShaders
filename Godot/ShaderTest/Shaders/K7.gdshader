@@ -55,7 +55,7 @@ ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, 
 	The computes the pixel color from the shader inputs and normal.
 	The optimized form of this shader should just be this function.
 */
-vec3 ComputeAlbedo2(ShaderInputs si, vec3 normal) {
+vec3 ComputeAlbedo(ShaderInputs si, vec3 normal) {
 	normal = normalize(normal);
 
 	float x = normal.x * si.rc - normal.y * si.rs;
@@ -74,5 +74,5 @@ vec3 ComputeAlbedo2(ShaderInputs si, vec3 normal) {
 
 void fragment() {
 	ShaderInputs shaderInputs = ComputeShaderInputs(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
-	ALBEDO = ComputeAlbedo2(shaderInputs, NORMAL);
+	ALBEDO = ComputeAlbedo(shaderInputs, NORMAL);
 }
