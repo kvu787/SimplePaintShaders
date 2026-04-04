@@ -141,7 +141,7 @@ float RemapFacingRatio(float shift, float x, float y) {
 /*
 	This is the original form of this shader computes everything on the gpu and focuses on code readability.
 */
-// @warning_ignore(unused_function)
+/*
 vec3 ComputeAlbedo1(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity, vec3 normal) {
 	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
 	normal = normalize(normal);
@@ -160,6 +160,7 @@ vec3 ComputeAlbedo1(vec4 baseColor, float brightness, float shift, float rotatio
 
 	return albedo;
 }
+*/
 
 struct ShaderInputs {
 	float rs;
