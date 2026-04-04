@@ -39,7 +39,7 @@ ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, 
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
 	vec3 darkRgb = mix(baseColor.rgb, vec3(0.0), shadowIntensity);
 	vec3 lightRgb = mix(baseColor.rgb, vec3(1.0), highlightIntensity);
-	vec3 a = vec3(facingRatioPositionOfBaseColor);
+	float a = facingRatioPositionOfBaseColor;
 	vec3 b = baseColor.rgb;
 	vec3 c = darkRgb;
 	vec3 d = lightRgb;
@@ -57,6 +57,7 @@ ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, 
 */
 vec3 ComputeAlbedo2(ShaderInputs si, vec3 normal) {
 	normal = normalize(normal);
+
 	float x = normal.x * si.rc - normal.y * si.rs;
 	float y = normal.x * si.rs + normal.y * si.rc;
 	float xStart = -1.0 * sqrt(max(0.0, 1.0 - y*y));
@@ -65,7 +66,7 @@ vec3 ComputeAlbedo2(ShaderInputs si, vec3 normal) {
 	float schlickOut = (si.u2 * schlickT) / mix(si.u1, si.u2, schlickT);
 	float remappedX = mix(xStart, xEnd, schlickOut);
 	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - y*y));
-	vec3 albedo = (si.k1 * vec3(remappedFacingRatio) + si.k2) / (si.k3 * vec3(remappedFacingRatio) + si.k4);
+	vec3 albedo = (si.k1 * remappedFacingRatio + si.k2) / (si.k3 * remappedFacingRatio + si.k4);
 
 	return albedo;
 }
