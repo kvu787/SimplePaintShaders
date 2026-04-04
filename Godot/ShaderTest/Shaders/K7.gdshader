@@ -179,8 +179,9 @@ struct ShaderInputs {
 ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity) {
 	ShaderInputs si;
 
-	si.rs = sin(-1.0 * radians(rotation));
-	si.rc = cos(-1.0 * radians(rotation));
+	float rotationRadians = -1.0 * radians(rotation);
+	si.rs = sin(rotationRadians);
+	si.rc = cos(rotationRadians);
 	si.u1 = mix(0.5, 1.0, shift);
 	si.u2 = 1.0 - si.u1;
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
