@@ -55,24 +55,24 @@ ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, 
 	The computes the pixel color from the shader inputs and normal.
 	The optimized form of this shader should just be this function.
 */
-vec3 ComputeAlbedo(ShaderInputs si, vec3 normal) {
+vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, vec3 k1, vec3 k2, vec3 k3, vec3 k4, vec3 normal) {
 	normal = normalize(normal);
 
-	float x = normal.x * si.rc - normal.y * si.rs;
-	float y = normal.x * si.rs + normal.y * si.rc;
+	float x = normal.x * rc - normal.y * rs;
+	float y = normal.x * rs + normal.y * rc;
 	float yy = y*y;
 	float xStart = -1.0 * sqrt(max(0.0, 1.0 - yy));
 	float xEnd = -1.0 * xStart;
 	float schlickT = (x - xStart) / (xEnd - xStart);
-	float schlickOut = (si.u2 * schlickT) / mix(si.u1, si.u2, schlickT);
+	float schlickOut = (u2 * schlickT) / mix(u1, u2, schlickT);
 	float remappedX = mix(xStart, xEnd, schlickOut);
 	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - yy));
-	vec3 albedo = (si.k1 * remappedFacingRatio + si.k2) / (si.k3 * remappedFacingRatio + si.k4);
+	vec3 albedo = (k1 * remappedFacingRatio + k2) / (k3 * remappedFacingRatio + k4);
 
 	return albedo;
 }
 
 void fragment() {
-	ShaderInputs shaderInputs = ComputeShaderInputs(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
-	ALBEDO = ComputeAlbedo(shaderInputs, NORMAL);
+	ShaderInputs si = ComputeShaderInputs(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
+	ALBEDO = ComputeAlbedo(si.rs, si.rc, si.u1, si.u2, si.k1, si.k2, si.k3, si.k4, NORMAL);
 }
