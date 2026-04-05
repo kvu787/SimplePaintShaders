@@ -1,6 +1,6 @@
 shader_type spatial;
-render_mode unshaded;
 render_mode cull_disabled;
+render_mode unshaded, specular_disabled, shadows_disabled, ambient_light_disabled, fog_disabled;
 
 // This is used for the default base color.
 #define BLUE vec4(0.039215688, 0.24705882, 0.78431374, 1)
@@ -147,15 +147,15 @@ vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(rotation));
 	float remappedFacingRatio = RemapFacingRatio(shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
-	vec3 darkRgb = mix(baseColor.rgb, vec3(0.0), shadowIntensity);
-	vec3 lightRgb = mix(baseColor.rgb, vec3(1.0), highlightIntensity);
+	vec3 darkRgb = vec3(0.0);
+	vec3 lightRgb = vec3(1.0);
 
-	vec3 albedo  = SchlickABCD_Vec3(
+	vec3 albedo = SchlickABCD_Vec3(
 		vec3(facingRatioPositionOfBaseColor),
 		baseColor.rgb,
 		darkRgb,
 		lightRgb,
-		vec3(remappedFacingRatio));
+		vec3(mix(1.0 - shadowIntensity, highlightIntensity, remappedFacingRatio)));
 
 	return albedo;
 }
