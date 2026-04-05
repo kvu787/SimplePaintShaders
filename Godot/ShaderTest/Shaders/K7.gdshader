@@ -1,6 +1,6 @@
 shader_type spatial;
-render_mode unshaded;
 render_mode cull_disabled;
+render_mode unshaded, specular_disabled, shadows_disabled, ambient_light_disabled, fog_disabled;
 
 #define BLUE vec4(0.039215688, 0.24705882, 0.78431374, 1)
 uniform vec4 BaseColor : source_color = BLUE;
