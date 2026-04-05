@@ -17,10 +17,11 @@ varying flat float v_rs;
 varying flat float v_rc;
 varying flat float v_u1;
 varying flat float v_u2;
+varying flat float v_u3;
+varying flat float v_u4;
 varying flat vec3 v_k1;
 varying flat vec3 v_k2;
 varying flat vec3 v_k3;
-varying flat vec3 v_k4;
 
 /*
 	The optimized form of this shader should declare these as actual uniforms and the CPU should compute them and pass them in.
@@ -30,10 +31,11 @@ struct ShaderUniforms {
 	float rc;
 	float u1;
 	float u2;
+	float u3;
+	float u4;
 	vec3 k1;
 	vec3 k2;
 	vec3 k3;
-	vec3 k4;
 };
 
 /*
@@ -48,17 +50,14 @@ ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shi
 	su.rc = cos(rotationRadians);
 	su.u1 = mix(0.5, 1.0, shift);
 	su.u2 = 1.0 - su.u1;
+	su.u3 = highlightIntensity + shadowIntensity - 1.0;
+	su.u4 = 1.0 - shadowIntensity;
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
-	vec3 darkRgb = mix(baseColor.rgb, vec3(0.0), shadowIntensity);
-	vec3 lightRgb = mix(baseColor.rgb, vec3(1.0), highlightIntensity);
 	float a = facingRatioPositionOfBaseColor;
 	vec3 b = baseColor.rgb;
-	vec3 c = darkRgb;
-	vec3 d = lightRgb;
-	su.k1 = d * (b - c) - a * b * (d - c);
-	su.k2 = a * c * (d - b);
-	su.k3 = (b - c) - a * (d - c);
-	su.k4 = a * (d - b);
+	su.k1 = b * (1.0 - a);
+	su.k2 = b - a;
+	su.k3 = a * (1.0 - b);
 
 	return su;
 }
@@ -67,7 +66,7 @@ ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shi
 	The computes the pixel color from the shader inputs and normal.
 	The optimized form of this shader should just be this function.
 */
-vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, vec3 k1, vec3 k2, vec3 k3, vec3 k4, vec3 normal) {
+vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, vec3 k1, vec3 k2, vec3 k3, vec3 normal) {
 	normal = normalize(normal);
 
 	float x = normal.x * rc - normal.y * rs;
@@ -79,7 +78,8 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, vec3 k1, vec3 k2, vec
 	float schlickOut = (u2 * schlickT) / mix(u1, u2, schlickT);
 	float remappedX = mix(xStart, xEnd, schlickOut);
 	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - yy));
-	vec3 albedo = (k1 * remappedFacingRatio + k2) / (k3 * remappedFacingRatio + k4);
+	float lightDarkAdjustedFacingRatio = u3 * remappedFacingRatio + u4;
+	vec3 albedo = (k1 * lightDarkAdjustedFacingRatio) / (k2 * lightDarkAdjustedFacingRatio + k3);
 
 	return albedo;
 }
@@ -90,12 +90,13 @@ void vertex() {
 	v_rc = su.rc;
 	v_u1 = su.u1;
 	v_u2 = su.u2;
+	v_u3 = su.u3;
+	v_u4 = su.u4;
 	v_k1 = su.k1;
 	v_k2 = su.k2;
 	v_k3 = su.k3;
-	v_k4 = su.k4;
 }
 
 void fragment() {
-	ALBEDO = ComputeAlbedo(v_rs, v_rc, v_u1, v_u2, v_k1, v_k2, v_k3, v_k4, NORMAL);
+	ALBEDO = ComputeAlbedo(v_rs, v_rc, v_u1, v_u2, v_u3, v_u4, v_k1, v_k2, v_k3, NORMAL);
 }
