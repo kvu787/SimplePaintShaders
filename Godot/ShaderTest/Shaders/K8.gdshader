@@ -13,8 +13,17 @@ uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
 uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
+varying flat float v_rs;
+varying flat float v_rc;
+varying flat float v_u1;
+varying flat float v_u2;
+varying flat vec3 v_k1;
+varying flat vec3 v_k2;
+varying flat vec3 v_k3;
+varying flat vec3 v_k4;
+
 /*
-	The optimized form of this shader should declare these as actual uniforms.
+	The optimized form of this shader should declare these as actual uniforms and the CPU compute them and pass them in.
 */
 struct ShaderUniforms {
 	float rs;
@@ -75,7 +84,18 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, vec3 k1, vec3 k2, vec
 	return albedo;
 }
 
-void fragment() {
+void vertex() {
 	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
-	ALBEDO = ComputeAlbedo(su.rs, su.rc, su.u1, su.u2, su.k1, su.k2, su.k3, su.k4, NORMAL);
+	v_rs = su.rs;
+	v_rc = su.rc;
+	v_u1 = su.u1;
+	v_u2 = su.u2;
+	v_k1 = su.k1;
+	v_k2 = su.k2;
+	v_k3 = su.k3;
+	v_k4 = su.k4;
+}
+
+void fragment() {
+	ALBEDO = ComputeAlbedo(v_rs, v_rc, v_u1, v_u2, v_k1, v_k2, v_k3, v_k4, NORMAL);
 }
