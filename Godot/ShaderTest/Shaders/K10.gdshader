@@ -86,6 +86,7 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 
 void vertex() {
 	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
+
 	v_rs = su.rs;
 	v_rc = su.rc;
 	v_u1 = su.u1;
