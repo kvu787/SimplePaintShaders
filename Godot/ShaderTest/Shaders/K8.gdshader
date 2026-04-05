@@ -13,7 +13,10 @@ uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
 uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
-struct ShaderInputs {
+/*
+	The optimized form of this shader should declare these as actual uniforms.
+*/
+struct ShaderUniforms {
 	float rs;
 	float rc;
 	float u1;
@@ -28,14 +31,14 @@ struct ShaderInputs {
 	This computes all the shader inputs that don't change per pixel.
 	The optimized form of this shader should run this on the CPU and then pass the data in ShaderInputs to the GPU.
 */
-ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity) {
-	ShaderInputs si;
+ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity) {
+	ShaderUniforms su;
 
 	float rotationRadians = -1.0 * radians(rotation);
-	si.rs = sin(rotationRadians);
-	si.rc = cos(rotationRadians);
-	si.u1 = mix(0.5, 1.0, shift);
-	si.u2 = 1.0 - si.u1;
+	su.rs = sin(rotationRadians);
+	su.rc = cos(rotationRadians);
+	su.u1 = mix(0.5, 1.0, shift);
+	su.u2 = 1.0 - su.u1;
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
 	vec3 darkRgb = mix(baseColor.rgb, vec3(0.0), shadowIntensity);
 	vec3 lightRgb = mix(baseColor.rgb, vec3(1.0), highlightIntensity);
@@ -43,12 +46,12 @@ ShaderInputs ComputeShaderInputs(vec4 baseColor, float brightness, float shift, 
 	vec3 b = baseColor.rgb;
 	vec3 c = darkRgb;
 	vec3 d = lightRgb;
-	si.k1 = d * (b - c) - a * b * (d - c);
-	si.k2 = a * c * (d - b);
-	si.k3 = (b - c) - a * (d - c);
-	si.k4 = a * (d - b);
+	su.k1 = d * (b - c) - a * b * (d - c);
+	su.k2 = a * c * (d - b);
+	su.k3 = (b - c) - a * (d - c);
+	su.k4 = a * (d - b);
 
-	return si;
+	return su;
 }
 
 /*
@@ -73,6 +76,6 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, vec3 k1, vec3 k2, vec
 }
 
 void fragment() {
-	ShaderInputs si = ComputeShaderInputs(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
-	ALBEDO = ComputeAlbedo(si.rs, si.rc, si.u1, si.u2, si.k1, si.k2, si.k3, si.k4, NORMAL);
+	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
+	ALBEDO = ComputeAlbedo(su.rs, su.rc, su.u1, su.u2, su.k1, su.k2, su.k3, su.k4, NORMAL);
 }
