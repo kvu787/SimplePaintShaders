@@ -82,19 +82,6 @@ vec3 SchlickAB_Vec3(vec3 a, vec3 b, vec3 t) {
 	return (k1 * t) / (k2 * t + k3);
 }
 
-/*
-	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b) and is
-	"squished" into the [c, d] range.
-*/
-vec3 SchlickABCD_Vec3(vec3 a, vec3 b, vec3 c, vec3 d, vec3 t) {
-	vec3 k1 = d * (b - c) - a * b * (d - c);
-	vec3 k2 = a * c * (d - b);
-	vec3 k3 = (b - c) - a * (d - c);
-	vec3 k4 = a * (d - b);
-
-	return (k1 * t + k2) / (k3 * t + k4);
-}
-
 float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
 	return mix(bStart, bEnd, (t - aStart) / (aEnd - aStart));
 }
