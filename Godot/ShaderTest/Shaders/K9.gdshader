@@ -72,6 +72,17 @@ float SchlickA(float a, float t) {
 }
 
 /*
+	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b).
+*/
+vec3 SchlickAB_Vec3(vec3 a, vec3 b, vec3 t) {
+	vec3 k1 = b * (1.0 - a);
+	vec3 k2 = b - a;
+	vec3 k3 = a * (1.0 - b);
+
+	return (k1 * t) / (k2 * t + k3);
+}
+
+/*
 	This is an augmented and vectorized form of Schlick's bias that intersects point (a, b) and is
 	"squished" into the [c, d] range.
 */
@@ -147,14 +158,10 @@ vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(rotation));
 	float remappedFacingRatio = RemapFacingRatio(shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
-	vec3 darkRgb = vec3(0.0);
-	vec3 lightRgb = vec3(1.0);
 
-	vec3 albedo = SchlickABCD_Vec3(
+	vec3 albedo = SchlickAB_Vec3(
 		vec3(facingRatioPositionOfBaseColor),
 		baseColor.rgb,
-		darkRgb,
-		lightRgb,
 		vec3(mix(1.0 - shadowIntensity, highlightIntensity, remappedFacingRatio)));
 
 	return albedo;
