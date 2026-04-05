@@ -23,7 +23,7 @@ varying flat vec3 v_k3;
 varying flat vec3 v_k4;
 
 /*
-	The optimized form of this shader should declare these as actual uniforms and the CPU compute them and pass them in.
+	The optimized form of this shader should declare these as actual uniforms and the CPU should compute them and pass them in.
 */
 struct ShaderUniforms {
 	float rs;

@@ -14,7 +14,7 @@ uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
 uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
 
 /*
-	The optimized form of this shader should declare these as actual uniforms and the CPU compute them and pass them in.
+	The optimized form of this shader should declare these as actual uniforms and the CPU should compute them and pass them in.
 */
 struct ShaderUniforms {
 	float rs;
