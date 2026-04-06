@@ -124,7 +124,7 @@ float XComponent(float y, float z) {
 	x-axis. The output of RemapFacingRatio forms a surface that is smooth (infinitely
 	differentiable) with respect to x and y. The remapped surface resembles a warped hemisphere.
 
-	Prerequisites:
+	Preconditions:
 	* shift is bounded in [0, 1].
 	* normalX and normalY are the x and y components of a 3d surface's normalized normal.
 */
@@ -136,8 +136,9 @@ float RemapFacingRatio(float shift, float normalX, float normalY) {
 	float schlickOutput = SchlickA(schlickInputA, schlickInputT);
 	float remappedX = MapRange(0.0, 1.0, sliceStartX, sliceEndX, schlickOutput);
 	float remappedFacingRatio = ZComponent(remappedX, normalY);
+	float remappedFacingRatioSafe = (isnan(remappedFacingRatio) || isinf(remappedFacingRatio)) ? 0.0 : remappedFacingRatio;
 
-	return remappedFacingRatio;
+	return remappedFacingRatioSafe;
 }
 
 /*
