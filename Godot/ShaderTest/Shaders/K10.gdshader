@@ -78,7 +78,7 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 	float schlickOut = (u2 * schlickT) / mix(u1, u2, schlickT);
 	float remappedX = mix(xStart, xEnd, schlickOut);
 	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - yy));
-	float remappedFacingRatioSafe = (isnan(remappedFacingRatio) || isinf(remappedFacingRatio)) ? 0.0 : remappedFacingRatio;
+	float remappedFacingRatioSafe = (abs(y) >= 1.0) ? 0.0 : remappedFacingRatio;
 	float lightDarkAdjustedFacingRatio = u3 * remappedFacingRatioSafe + u4;
 	vec3 albedo = (k1 * lightDarkAdjustedFacingRatio) / (k2 * lightDarkAdjustedFacingRatio + k3);
 
