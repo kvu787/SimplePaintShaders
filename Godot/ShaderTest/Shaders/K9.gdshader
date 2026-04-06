@@ -33,8 +33,8 @@ uniform float Brightness : hint_range(0.0, 1.0) = BRIGHTNESS_COSINE_37_DEGREES;
 
 uniform float Shift : hint_range(0.0, 1.0) = 0.0;
 uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
-uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
-uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
+uniform float DarkPoint : hint_range(0.0, 1.0) = 0.0;
+uniform float LightPoint : hint_range(0.0, 1.0) = 1.0;
 
 /*
 	NOTE for the below Schlick functions:
@@ -144,7 +144,7 @@ float RemapFacingRatio(float shift, float normalX, float normalY) {
 /*
 	This is the original form of this shader computes everything on the gpu and focuses on code readability.
 */
-vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity, vec3 normal) {
+vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation, float darkPoint, float lightPoint, vec3 normal) {
 	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
 	normal = normalize(normal);
 	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(rotation));
@@ -154,12 +154,12 @@ vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation
 	vec3 albedo = SchlickAB_Vec3(
 		vec3(facingRatioPositionOfBaseColor),
 		baseColor.rgb,
-		vec3(mix(1.0 - shadowIntensity, highlightIntensity, remappedFacingRatio)));
+		vec3(mix(darkPoint, lightPoint, remappedFacingRatio)));
 
 	return albedo;
 }
 
 void fragment() {
 	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
-	ALBEDO = ComputeAlbedo(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity, NORMAL);
+	ALBEDO = ComputeAlbedo(BaseColor, Brightness, Shift, Rotation, DarkPoint, LightPoint, NORMAL);
 }

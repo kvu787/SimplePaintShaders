@@ -10,8 +10,8 @@ uniform float Brightness : hint_range(0.0, 1.0) = BRIGHTNESS_COSINE_37_DEGREES;
 
 uniform float Shift : hint_range(0.0, 1.0) = 0.0;
 uniform float Rotation : hint_range(0.0, 360.0) = 0.0;
-uniform float ShadowIntensity : hint_range(0.0, 1.0) = 1.0;
-uniform float HighlightIntensity : hint_range(0.0, 1.0) = 1.0;
+uniform float DarkPoint : hint_range(0.0, 1.0) = 0.0;
+uniform float LightPoint : hint_range(0.0, 1.0) = 1.0;
 
 varying flat float v_rs;
 varying flat float v_rc;
@@ -42,7 +42,7 @@ struct ShaderUniforms {
 	This computes all the shader inputs that don't change per pixel.
 	The optimized form of this shader should run this on the CPU and then pass the data in ShaderInputs to the GPU.
 */
-ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shift, float rotation, float shadowIntensity, float highlightIntensity) {
+ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shift, float rotation, float darkPoint, float lightPoint) {
 	ShaderUniforms su;
 
 	float rotationRadians = -1.0 * radians(rotation);
@@ -50,8 +50,8 @@ ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shi
 	su.rc = cos(rotationRadians);
 	su.u1 = mix(0.5, 1.0, shift);
 	su.u2 = 1.0 - su.u1;
-	su.u3 = highlightIntensity + shadowIntensity - 1.0;
-	su.u4 = 1.0 - shadowIntensity;
+	su.u3 = lightPoint - darkPoint;
+	su.u4 = darkPoint;
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
 	float a = facingRatioPositionOfBaseColor;
 	vec3 b = baseColor.rgb;
@@ -86,7 +86,7 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 }
 
 void vertex() {
-	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, ShadowIntensity, HighlightIntensity);
+	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, DarkPoint, LightPoint);
 
 	v_rs = su.rs;
 	v_rc = su.rc;
