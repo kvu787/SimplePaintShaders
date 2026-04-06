@@ -123,15 +123,19 @@ float XComponent(float y, float z) {
 	RemapFacingRatio remaps the facing ratio such that the "peak" is shifted along the positive
 	x-axis. The output of RemapFacingRatio forms a surface that is smooth (infinitely
 	differentiable) with respect to x and y. The remapped surface resembles a warped hemisphere.
+
+	Prerequisites:
+	* shift is bounded in [0, 1].
+	* normalX and normalY are the x and y components of a 3d surface's normalized normal.
 */
-float RemapFacingRatio(float shift, float x, float y) {
-	float xStart = -XComponent(y, 0.0);
-	float xEnd = XComponent(y, 0.0);
-	float schlickT = MapRange(xStart, xEnd, 0.0, 1.0, x);
-	float schlickA = MapRange(0.0, 1.0, 0.5, 1.0, shift);
-	float schlickOut = SchlickA(schlickA, schlickT);
-	float remappedX = MapRange(0.0, 1.0, xStart, xEnd, schlickOut);
-	float remappedFacingRatio = ZComponent(remappedX, y);
+float RemapFacingRatio(float shift, float normalX, float normalY) {
+	float sliceStartX = -XComponent(normalY, 0.0);
+	float sliceEndX = XComponent(normalY, 0.0);
+	float schlickInputT = MapRange(sliceStartX, sliceEndX, 0.0, 1.0, normalX);
+	float schlickInputA = MapRange(0.0, 1.0, 0.5, 1.0, shift);
+	float schlickOutput = SchlickA(schlickInputA, schlickInputT);
+	float remappedX = MapRange(0.0, 1.0, sliceStartX, sliceEndX, schlickOutput);
+	float remappedFacingRatio = ZComponent(remappedX, normalY);
 
 	return remappedFacingRatio;
 }
