@@ -1,13 +1,13 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://dueip3cm242i0"]
 
-[ext_resource type="Shader" uid="uid://wkjyg3mvnc4m" path="res://Shaders/K9.gdshader" id="1_del88"]
+[ext_resource type="Shader" uid="uid://c3qruw7m63g48" path="res://Shaders/K10.gdshader" id="1_del88"]
 
 [resource]
 render_priority = 0
 shader = ExtResource("1_del88")
 shader_parameter/BaseColor = Color(0.2784314, 0.5686275, 0.3019608, 1)
-shader_parameter/Brightness = 0.2000000095
+shader_parameter/Brightness = 0.2830000134425
 shader_parameter/Shift = 0.55200002622
 shader_parameter/Rotation = 45.0000021375
-shader_parameter/ShadowIntensity = 1.0
-shader_parameter/HighlightIntensity = 1.0
+shader_parameter/ShadowIntensity = 0.806000038285
+shader_parameter/HighlightIntensity = 0.8750000415625
