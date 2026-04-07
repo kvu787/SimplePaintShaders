@@ -86,11 +86,11 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 	float x = normal.x * rc - normal.y * rs;
 	float y = normal.x * rs + normal.y * rc;
 	float yy = y*y;
-	float xStart = -1.0 * sqrt(max(0.0, 1.0 - yy));
-	float xEnd = -1.0 * xStart;
-	float schlickT = (x - xStart) / (xEnd - xStart);
-	float schlickOut = (u2 * schlickT) / mix(u1, u2, schlickT);
-	float remappedX = mix(xStart, xEnd, schlickOut);
+	float sliceStartX = -1.0 * sqrt(max(0.0, 1.0 - yy));
+	float sliceEndX = -1.0 * sliceStartX;
+	float schlickInputT = (x - sliceStartX) / (sliceEndX - sliceStartX);
+	float schlickOutput = (u2 * schlickInputT) / mix(u1, u2, schlickInputT);
+	float remappedX = mix(sliceStartX, sliceEndX, schlickOutput);
 	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - yy));
 	float remappedFacingRatioSafe = (abs(y) < 1.0) ? remappedFacingRatio : 0.0;
 	float lightDarkAdjustedFacingRatio = u3 * remappedFacingRatioSafe + u4;
