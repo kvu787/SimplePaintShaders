@@ -126,17 +126,17 @@ float XComponent(float y, float z) {
 
 	Preconditions:
 	* shift is bounded in [0, 1].
-	* normalX and normalY are the x and y components of a 3d surface's normalized normal.
+	* x and y are components from a 3d surface's normalized normal.
 */
-float RemapFacingRatio(float shift, float normalX, float normalY) {
-	float sliceStartX = -XComponent(normalY, 0.0);
-	float sliceEndX = XComponent(normalY, 0.0);
-	float schlickInputT = MapRange(sliceStartX, sliceEndX, 0.0, 1.0, normalX);
+float RemapFacingRatio(float shift, float x, float y) {
+	float sliceStartX = -XComponent(y, 0.0);
+	float sliceEndX = XComponent(y, 0.0);
+	float schlickInputT = MapRange(sliceStartX, sliceEndX, 0.0, 1.0, x);
 	float schlickInputA = MapRange(0.0, 1.0, 0.5, 1.0, shift);
 	float schlickOutput = SchlickA(schlickInputA, schlickInputT);
 	float remappedX = MapRange(0.0, 1.0, sliceStartX, sliceEndX, schlickOutput);
-	float remappedFacingRatio = ZComponent(remappedX, normalY);
-	float remappedFacingRatioSafe = (abs(normalY) < 1.0) ? remappedFacingRatio : 0.0;
+	float remappedFacingRatio = ZComponent(remappedX, y);
+	float remappedFacingRatioSafe = (abs(y) < 1.0) ? remappedFacingRatio : 0.0;
 
 	return remappedFacingRatioSafe;
 }
