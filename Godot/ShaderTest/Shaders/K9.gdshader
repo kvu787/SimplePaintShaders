@@ -86,9 +86,9 @@ float MapRange(float aStart, float aEnd, float bStart, float bEnd, float t) {
 	return mix(bStart, bEnd, (t - aStart) / (aEnd - aStart));
 }
 
-vec2 RotateXY(vec2 xy, float angle) {
-	float s = sin(angle);
-	float c = cos(angle);
+vec2 RotateAboutZ(vec2 xy, float radians) {
+	float s = sin(radians);
+	float c = cos(radians);
 	// Standard CCW Matrix: [ c  -s ]
 	//                      [ s   c ]
 	// GLSL Column-Major: vec2(c, s), vec2(-s, c)
@@ -147,7 +147,7 @@ float RemapFacingRatio(float shift, float normalX, float normalY) {
 vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation, float darkPoint, float lightPoint, vec3 normal) {
 	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
 	normal = normalize(normal);
-	vec2 rotatedNormalXY = RotateXY(normal.xy, -1.0 * radians(rotation));
+	vec2 rotatedNormalXY = RotateAboutZ(normal.xy, -1.0 * radians(rotation));
 	float remappedFacingRatio = RemapFacingRatio(shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
 
