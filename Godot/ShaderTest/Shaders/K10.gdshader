@@ -62,6 +62,20 @@ ShaderUniforms ComputeShaderUniforms(vec4 baseColor, float brightness, float shi
 	return su;
 }
 
+void vertex() {
+	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, DarkPoint, LightPoint);
+
+	v_rs = su.rs;
+	v_rc = su.rc;
+	v_u1 = su.u1;
+	v_u2 = su.u2;
+	v_u3 = su.u3;
+	v_u4 = su.u4;
+	v_k1 = su.k1;
+	v_k2 = su.k2;
+	v_k3 = su.k3;
+}
+
 /*
 	The computes the pixel color from the shader inputs and normal.
 	The optimized form of this shader should just be this function.
@@ -83,20 +97,6 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 	vec3 albedo = (k1 * lightDarkAdjustedFacingRatio) / (k2 * lightDarkAdjustedFacingRatio + k3);
 
 	return albedo;
-}
-
-void vertex() {
-	ShaderUniforms su = ComputeShaderUniforms(BaseColor, Brightness, Shift, Rotation, DarkPoint, LightPoint);
-
-	v_rs = su.rs;
-	v_rc = su.rc;
-	v_u1 = su.u1;
-	v_u2 = su.u2;
-	v_u3 = su.u3;
-	v_u4 = su.u4;
-	v_k1 = su.k1;
-	v_k2 = su.k2;
-	v_k3 = su.k3;
 }
 
 void fragment() {
