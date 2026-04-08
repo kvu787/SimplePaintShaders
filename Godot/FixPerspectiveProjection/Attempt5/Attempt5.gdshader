@@ -20,7 +20,7 @@ render_mode unshaded, specular_disabled, shadows_disabled, ambient_light_disable
 	function manually corrects the normal based on the exact angle of the specific ray hitting that
 	exact pixel.
 */
-vec2 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
+vec2 ComputePerspectiveCorrectedNormalXY(vec3 normal, vec3 view) {
 	normal = normalize(normal);
 	view = normalize(view);
 
@@ -35,17 +35,17 @@ vec2 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
 
 	// 3. Project the normal onto our new X and Y axes.
 	// Note: If you also did dot(normal, view), you would get your facing ratio back.
-	vec2 corrected_xy = vec2(dot(normal, xAxis), dot(normal, yAxis));
+	vec2 correctedNormalXY = vec2(dot(normal, xAxis), dot(normal, yAxis));
 
-	return corrected_xy;
+	return correctedNormalXY;
 }
 
 void fragment() {
-	vec2 corrected_xy = ComputePerspectiveCorrectedNormal(NORMAL, VIEW);
+	vec2 correctedNormalXY = ComputePerspectiveCorrectedNormalXY(NORMAL, VIEW);
 
 	// 4. Map from [-1.0, 1.0] to [0.0, 1.0] so it renders properly as visible colors.
-	corrected_xy = corrected_xy * 0.5 + 0.5;
+	correctedNormalXY = correctedNormalXY * 0.5 + 0.5;
 
 	// X will show as Red, Y will show as Green
-	ALBEDO = vec3(corrected_xy.x, corrected_xy.y, 0.0);
+	ALBEDO = vec3(correctedNormalXY.x, correctedNormalXY.y, 0.0);
 }
