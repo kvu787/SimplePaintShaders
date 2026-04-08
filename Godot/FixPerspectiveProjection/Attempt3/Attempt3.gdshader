@@ -12,5 +12,5 @@ void fragment() {
 	
 	float facingRatio = dot(normal, view);
 	
-	ALBEDO = vec3(max(facingRatio, 0.0));
+	ALBEDO = vec3(facingRatio);
 }
