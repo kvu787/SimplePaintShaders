@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://c33nbehbe18lr"]
+
+[ext_resource type="Material" uid="uid://dhas57w2xesac" path="res://Attempt3/Attempt3.tres" id="1_qk236"]
+[ext_resource type="Environment" uid="uid://ddarcduvgg7sy" path="res://Environment.tres" id="2_rnmcf"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_25clq"]
+
+[node name="Attempt3" type="Node3D" unique_id=491694364]
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=908880402]
+mesh = SubResource("SphereMesh_25clq")
+surface_material_override/0 = ExtResource("1_qk236")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1834188086]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+mesh = SubResource("SphereMesh_25clq")
+surface_material_override/0 = ExtResource("1_qk236")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1458983737]
+environment = ExtResource("2_rnmcf")
