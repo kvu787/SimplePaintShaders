@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://c04t5hjnor4ct"]
+
+[ext_resource type="Environment" uid="uid://boi81h7k6ctsk" path="res://Environment.tres" id="1_uvsxw"]
+[ext_resource type="Material" uid="uid://dteqe8s181rau" path="res://TestSpheres/TestSpheres.tres" id="2_j5vea"]
+
+[sub_resource type="SphereMesh" id="SphereMesh_uvsxw"]
+radial_segments = 1024
+rings = 512
+
+[node name="TestSpheres" type="Node3D" unique_id=1578209171]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1860659778]
+environment = ExtResource("1_uvsxw")
+
+[node name="Sphere1" type="MeshInstance3D" parent="." unique_id=1806767027]
+mesh = SubResource("SphereMesh_uvsxw")
+surface_material_override/0 = ExtResource("2_j5vea")
+
+[node name="Sphere2" type="MeshInstance3D" parent="." unique_id=1113246788]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -5)
+mesh = SubResource("SphereMesh_uvsxw")
+surface_material_override/0 = ExtResource("2_j5vea")

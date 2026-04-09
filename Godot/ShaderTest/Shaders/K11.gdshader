@@ -142,11 +142,60 @@ float RemapFacingRatio(float shift, float x, float y) {
 }
 
 /*
+	NOTE from official Godot docs:
+	https://docs.godotengine.org/en/4.6/tutorials/shaders/shader_reference/spatial_shader.html#fragment-built-ins
+	NORMAL = Normal that comes from the vertex() function, in view space.
+	VIEW = Normalized vector from fragment position to camera (in view space). This is the same for both perspective and orthogonal cameras.
+*/
+
+/*
+	We need this function to correct the VIEW vector for orthogonal perspective cameras because
+	Godot doesn't make all VIEW vectors parallel for orthogonal perspective.
+*/
+vec3 ComputeOrthogonalCorrectedView(vec3 view, mat4 projectionMatrix) {
+	// PROJECTION_MATRIX[3][3] is 1.0 for Orthogonal, 0.0 for Perspective
+	float isOrthogonal = projectionMatrix[3][3];
+
+	// Switch between the built-in VIEW and the hardcoded orthogonal vector
+	vec3 correctedView = mix(view, vec3(0.0, 0.0, 1.0), isOrthogonal);
+
+	return correctedView;
+}
+
+/*
+	Why do we need this function instead of simply using NORMAL.xy?
+
+	Using NORMAL.xy assumes the camera shoots perfectly straight, parallel rays out of the screen,
+	which is true for an orthogonal camera. You can just use NORMAL.xy to get correct results for
+	an orthogonal camera.
+
+	But for a perspective camera, the rays fan outward like a cone. If we just use NORMAL.xy for a
+	perspective camera, the shading for objects at the edges of the screen will look shifted and
+	incorrect because the math would ignore the angle of the fanned-out ray hitting them. This
+	function manually corrects the normal based on the exact angle of the specific ray hitting that
+	exact pixel.
+*/
+vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
+	// 1. Fix singularity
+	// If the view vector is almost perfectly parallel to the Y-axis, then swap the reference UP
+	// vector to the X-axis to prevent a zero-vector cross product.
+	vec3 upVector = abs(view.y) > 0.999 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+
+	// 2. Construct an orthogonal basis using the VIEW vector as the localized Z-axis.
+	vec3 xAxis = normalize(cross(upVector, view));
+	vec3 yAxis = cross(view, xAxis);
+
+	// 3. Project the normal onto our new X and Y axes.
+	// Note: If you also did dot(normal, view), you would get your facing ratio back.
+	vec3 correctedNormal = vec3(dot(normal, xAxis), dot(normal, yAxis), dot(normal, view));
+
+	return correctedNormal;
+}
+
+/*
 	This is the original form of this shader computes everything on the gpu and focuses on code readability.
 */
 vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation, float darkPoint, float lightPoint, vec3 normal) {
-	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
-	normal = normalize(normal);
 	vec2 rotatedNormalXY = RotateAboutZ(normal.xy, -1.0 * radians(rotation));
 	float remappedFacingRatio = RemapFacingRatio(shift, rotatedNormalXY.x, rotatedNormalXY.y);
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
@@ -159,7 +208,11 @@ vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation
 	return albedo;
 }
 
+/*
+	This shader uses NORMAL, which is the view space normal, effectively making it a matcap shader.
+*/
 void fragment() {
-	// This uses NORMAL, which is the view space normal, effectively making it a matcap shader.
-	ALBEDO = ComputeAlbedo(BaseColor, Brightness, Shift, Rotation, DarkPoint, LightPoint, NORMAL);
+	vec3 correctedView = ComputeOrthogonalCorrectedView(normalize(VIEW), PROJECTION_MATRIX);
+	vec3 correctedNormal = ComputePerspectiveCorrectedNormal(normalize(NORMAL), correctedView);
+	ALBEDO = ComputeAlbedo(BaseColor, Brightness, Shift, Rotation, DarkPoint, LightPoint, correctedNormal);
 }
