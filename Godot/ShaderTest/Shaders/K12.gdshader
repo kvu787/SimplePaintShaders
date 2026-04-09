@@ -83,8 +83,8 @@ vec3 ComputeOrthogonalCorrectedView(vec3 view, mat4 projectionMatrix) {
 }
 
 vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
-	vec3 upVector = abs(view.y) > 0.99 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
-	vec3 xAxis = normalize(cross(upVector, view));
+	vec3 up = abs(view.y) > 0.99 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+	vec3 xAxis = normalize(cross(up, view));
 	vec3 yAxis = cross(view, xAxis);
 	vec3 correctedNormal = vec3(dot(normal, xAxis), dot(normal, yAxis), dot(normal, view));
 	return correctedNormal;

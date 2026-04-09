@@ -178,10 +178,10 @@ vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
 	// 1. Fix singularity
 	// If the view vector is almost perfectly parallel to the Y-axis, then swap the reference UP
 	// vector to the X-axis to prevent a zero-vector cross product.
-	vec3 upVector = abs(view.y) > 0.99 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+	vec3 up = abs(view.y) > 0.99 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
 
 	// 2. Construct an orthogonal basis using the VIEW vector as the localized Z-axis.
-	vec3 xAxis = normalize(cross(upVector, view));
+	vec3 xAxis = normalize(cross(up, view));
 	vec3 yAxis = cross(view, xAxis);
 
 	// 3. Project the normal onto our new X and Y axes.
