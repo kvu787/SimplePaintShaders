@@ -136,9 +136,8 @@ float RemapFacingRatio(float shift, float x, float y) {
 	float schlickOutput = SchlickA(schlickInputA, schlickInputT);
 	float remappedX = MapRange(0.0, 1.0, sliceStartX, sliceEndX, schlickOutput);
 	float remappedFacingRatio = ZComponent(remappedX, y);
-	float remappedFacingRatioSafe = (abs(y) < 1.0) ? remappedFacingRatio : 0.0;
 
-	return remappedFacingRatioSafe;
+	return remappedFacingRatio;
 }
 
 /*
