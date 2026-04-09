@@ -198,6 +198,10 @@ vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
 vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation, float darkPoint, float lightPoint, vec3 normal) {
 	vec2 rotatedNormalXY = RotateAboutZ(normal.xy, -1.0 * radians(rotation));
 	float remappedFacingRatio = RemapFacingRatio(shift, rotatedNormalXY.x, rotatedNormalXY.y);
+
+	// Safeguard against numerical edge cases from RemapFacingRatio
+	remappedFacingRatio = normal.z < 0.01 ? 0.0 : remappedFacingRatio;
+
 	float facingRatioPositionOfBaseColor = 1.0 - brightness;
 
 	vec3 albedo = SchlickAB_Vec3(
