@@ -76,13 +76,25 @@ void vertex() {
 	v_k3 = su.k3;
 }
 
+vec3 ComputeOrthogonalCorrectedView(vec3 view, mat4 projectionMatrix) {
+	float isOrthogonal = projectionMatrix[3][3];
+	vec3 correctedView = mix(view, vec3(0.0, 0.0, 1.0), isOrthogonal);
+	return correctedView;
+}
+
+vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
+	vec3 upVector = abs(view.y) > 0.99 ? vec3(1.0, 0.0, 0.0) : vec3(0.0, 1.0, 0.0);
+	vec3 xAxis = normalize(cross(upVector, view));
+	vec3 yAxis = cross(view, xAxis);
+	vec3 correctedNormal = vec3(dot(normal, xAxis), dot(normal, yAxis), dot(normal, view));
+	return correctedNormal;
+}
+
 /*
 	The computes the pixel color from the shader inputs and normal.
 	The optimized form of this shader should just be this function.
 */
 vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, vec3 k1, vec3 k2, vec3 k3, vec3 normal) {
-	normal = normalize(normal);
-
 	float x = normal.x * rc - normal.y * rs;
 	float y = normal.x * rs + normal.y * rc;
 	float yy = y*y;
@@ -92,7 +104,7 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 	float schlickOutput = (u2 * schlickInputT) / mix(u1, u2, schlickInputT);
 	float remappedX = mix(sliceStartX, sliceEndX, schlickOutput);
 	float remappedFacingRatio = sqrt(max(0.0, 1.0 - remappedX*remappedX - yy));
-	float remappedFacingRatioSafe = (abs(y) < 1.0) ? remappedFacingRatio : 0.0;
+	float remappedFacingRatioSafe = normal.z < 0.01 ? 0.0 : remappedFacingRatio;
 	float lightDarkAdjustedFacingRatio = u3 * remappedFacingRatioSafe + u4;
 	vec3 albedo = (k1 * lightDarkAdjustedFacingRatio) / (k2 * lightDarkAdjustedFacingRatio + k3);
 
@@ -100,5 +112,7 @@ vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, v
 }
 
 void fragment() {
-	ALBEDO = ComputeAlbedo(v_rs, v_rc, v_u1, v_u2, v_u3, v_u4, v_k1, v_k2, v_k3, NORMAL);
+	vec3 correctedView = ComputeOrthogonalCorrectedView(normalize(VIEW), PROJECTION_MATRIX);
+	vec3 correctedNormal = ComputePerspectiveCorrectedNormal(normalize(NORMAL), correctedView);
+	ALBEDO = ComputeAlbedo(v_rs, v_rc, v_u1, v_u2, v_u3, v_u4, v_k1, v_k2, v_k3, correctedNormal);
 }
