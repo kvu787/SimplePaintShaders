@@ -1,6 +1,6 @@
 [gd_resource type="ShaderMaterial" format=3 uid="uid://dg8at28deaf0t"]
 
-[ext_resource type="Shader" uid="uid://b82vh8rejyysn" path="res://Shaders/K5.gdshader" id="1_sq4yn"]
+[ext_resource type="Shader" uid="uid://b82vh8rejyysn" path="res://Shaders/K05.gdshader" id="1_sq4yn"]
 
 [resource]
 render_priority = 0
