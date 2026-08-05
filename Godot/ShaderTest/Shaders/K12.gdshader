@@ -91,7 +91,7 @@ vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
 }
 
 /*
-	The computes the pixel color from the shader inputs and normal.
+	This computes the pixel color from the shader inputs and normal.
 	The optimized form of this shader should just be this function.
 */
 vec3 ComputeAlbedo(float rs, float rc, float u1, float u2, float u3, float u4, vec3 k1, vec3 k2, vec3 k3, vec3 normal) {
