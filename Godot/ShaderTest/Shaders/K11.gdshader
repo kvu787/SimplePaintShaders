@@ -192,7 +192,7 @@ vec3 ComputePerspectiveCorrectedNormal(vec3 normal, vec3 view) {
 }
 
 /*
-	This is the original form of this shader computes everything on the gpu and focuses on code readability.
+	This is the original form of this shader that computes everything on the gpu and focuses on code readability.
 */
 vec3 ComputeAlbedo(vec4 baseColor, float brightness, float shift, float rotation, float darkPoint, float lightPoint, vec3 normal) {
 	vec2 rotatedNormalXY = RotateAboutZ(normal.xy, -1.0 * radians(rotation));
