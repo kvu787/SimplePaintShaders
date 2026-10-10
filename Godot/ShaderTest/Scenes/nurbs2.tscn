@@ -5,5 +5,5 @@
 
 [node name="nurbs2" unique_id=344455982 instance=ExtResource("1_svqxy")]
 
-[node name="SurfPatch" parent="." index="0" unique_id=99808237]
+[node name="SurfPatch" parent="." index="0" unique_id=536467139]
 material_override = ExtResource("2_ws3co")
